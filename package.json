@@ -1,0 +1,36 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "description": "## Env Node >= 14",
+  "main": "playwright.config.ts",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "run-tests": "node scripts/runTests.js recruit",
+    "build": "tsc --noEmit"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.55.1",
+    "@types/node": "^24.5.2",
+    "@types/nodemailer": "^6.4.12",
+    "playwright-slack-report": "^1.1.16",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.0"
+  },
+  "dependencies": {
+    "axios": "^1.7.7",
+    "dotenv": "^16.5.0",
+    "form-data": "^4.0.0",
+    "imap-simple": "^5.1.0",
+    "mailparser": "^3.7.3",
+    "moment": "^2.29.4",
+    "moment-timezone": "^0.5.43",
+    "nodemailer": "^6.9.5",
+    "pg": "^8.13.1",
+    "twilio": "^5.10.1"
+  }
+}

@@ -1,0 +1,15 @@
+node_modules/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+.env
+/logs/*
+/screenshots/recruit/*
+/email-drafts/*
+client_credentials.json
+
+# Playwright
+/blob-report/
+
+# Playwright
+/playwright/.auth/
