@@ -54,11 +54,9 @@ test("バイトル応募メールのリンクをクリック", async ({ page }) 
 
         try {
             await page.goto(testLink, {
-                waitUntil: "networkidle",
+                waitUntil: "domcontentloaded",
                 timeout: 30000,
             });
-
-            await page.waitForLoadState("domcontentloaded");
 
             const timestamp = formatTimestampJST();
             await page.screenshot({
