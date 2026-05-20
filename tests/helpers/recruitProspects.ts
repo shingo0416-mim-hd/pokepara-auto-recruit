@@ -9,9 +9,10 @@ export interface RecruitProspectMessageEventParams {
   applicantNameKana?: string;
   phone?: string;
   email?: string;
-  channel: 'mail' | 'sms' | 'rcs';
+  channel: 'source' | 'mail' | 'sms' | 'rcs';
   deliveryType?: string;
   templateKey?: string;
+  externalMessageId?: string;
   sentAt?: string;
   status?: string;
   payload?: Record<string, unknown>;
@@ -41,7 +42,7 @@ export async function notifyRecruitProspectMessageEvent(params: RecruitProspectM
     url,
     {
       tenant_id: params.tenantId,
-      source_type: params.sourceType || 'baitoru',
+      source_type: params.sourceType || '',
       source_job_no: params.sourceJobNo || '',
       source_company_name: params.sourceCompanyName || '',
       applicant_name: params.applicantName || '',
@@ -51,6 +52,7 @@ export async function notifyRecruitProspectMessageEvent(params: RecruitProspectM
       channel: params.channel,
       delivery_type: params.deliveryType || '',
       template_key: params.templateKey || '',
+      external_message_id: params.externalMessageId || '',
       sent_at: params.sentAt || new Date().toISOString(),
       status: params.status || 'sent',
       payload: params.payload || {},
