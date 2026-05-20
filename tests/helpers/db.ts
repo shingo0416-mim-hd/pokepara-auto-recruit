@@ -74,7 +74,7 @@ export async function fetchPrimaryBaitoruCredentials(tenantId: number): Promise<
 
 export async function fetchMailSettings(tenantId: number): Promise<MailSettings> {
   const dbUrl = requireDbUrl();
-  return fetchMailSettingsFromPostgres(dbUrl, tenantId);
+  return fetchMailSettingsFromPostgres(dbUrl, tenantId, process.env.RECRUIT_SOURCE_TYPE || 'pokepara');
 }
 
 export async function fetchChatworkSettings(tenantId: number): Promise<ChatworkSettings> {
@@ -84,7 +84,7 @@ export async function fetchChatworkSettings(tenantId: number): Promise<ChatworkS
 
 export async function fetchSmsSettings(tenantId: number): Promise<SmsSettings> {
   const dbUrl = requireDbUrl();
-  return fetchSmsSettingsFromPostgres(dbUrl, tenantId);
+  return fetchSmsSettingsFromPostgres(dbUrl, tenantId, process.env.RECRUIT_SOURCE_TYPE || 'pokepara');
 }
 
 export async function fetchStoreBroadcastAgeRange(tenantId: number, companyId: number): Promise<StoreBroadcastAgeRange | null> {
@@ -128,7 +128,7 @@ async function fetchFromPostgres(dbUrl: string, tenantId: number): Promise<Baito
   }
 }
 
-async function fetchMailSettingsFromPostgres(dbUrl: string, tenantId: number): Promise<MailSettings> {
+async function fetchMailSettingsFromPostgres(dbUrl: string, tenantId: number, sourceType: string): Promise<MailSettings> {
   const client = new PgClient(buildPgOptions(dbUrl));
   await client.connect();
 
@@ -142,11 +142,12 @@ async function fetchMailSettingsFromPostgres(dbUrl: string, tenantId: number): P
         ms.content AS "content"
       FROM mail_settings ms
       WHERE ms.tenant_id = $1
-      ORDER BY ms.id ASC
+        AND (ms.source_type = $2 OR ms.source_type IS NULL)
+      ORDER BY CASE WHEN ms.source_type = $2 THEN 0 ELSE 1 END, ms.id ASC
       LIMIT 1;
     `;
 
-    const result = await client.query(query, [tenantId]);
+    const result = await client.query(query, [tenantId, sourceType]);
     const row = result.rows?.[0] as { replyEmail?: string; gmailAppKey?: string; isActive?: boolean; subject?: string | null; content?: string | null } | undefined;
 
     if (!row?.replyEmail || !row?.gmailAppKey || typeof row.isActive !== 'boolean') {
@@ -198,7 +199,7 @@ async function fetchChatworkSettingsFromPostgres(dbUrl: string, tenantId: number
   }
 }
 
-async function fetchSmsSettingsFromPostgres(dbUrl: string, tenantId: number): Promise<SmsSettings> {
+async function fetchSmsSettingsFromPostgres(dbUrl: string, tenantId: number, sourceType: string): Promise<SmsSettings> {
   const client = new PgClient(buildPgOptions(dbUrl));
   await client.connect();
 
@@ -219,11 +220,12 @@ async function fetchSmsSettingsFromPostgres(dbUrl: string, tenantId: number): Pr
         ss.is_active AS "isActive"
       FROM sms_settings ss
       WHERE ss.tenant_id = $1
-      ORDER BY ss.id ASC
+        AND (ss.source_type = $2 OR ss.source_type IS NULL)
+      ORDER BY CASE WHEN ss.source_type = $2 THEN 0 ELSE 1 END, ss.id ASC
       LIMIT 1;
     `;
 
-    const result = await client.query(query, [tenantId]);
+    const result = await client.query(query, [tenantId, sourceType]);
     const row = result.rows?.[0] as {
       serviceType?: string | null;
       smsTitle?: string | null;
